@@ -1,12 +1,15 @@
 /* global TCreateParams: false, TDashboardPermissions: false, TDBObjectType: false, TDBObjectPermissions: false, TDatabasePermissions: false */
+// eslint-disable-next-line sort-imports
+import * as helpers from "./helpers"
+import clone from "ramda.clone"
+import EventEmitter from "eventemitter3"
+import MapDClientV2 from "./mapd-client-v2"
+import processQueryResults from "./process-query-results"
 
-const { TDatumType, TEncodingType } =
-  (isNodeRuntime() && require("../build/thrift/node/common_types.js")) || window // eslint-disable-line global-require
-const { TPixel, TOmniSciException } =
-  (isNodeRuntime() && require("../build/thrift/node/omnisci_types.js")) || window // eslint-disable-line global-require
-const MapDThrift =
-  isNodeRuntime() && require("../build/thrift/node/OmniSci.js") // eslint-disable-line global-require
-let Thrift = (isNodeRuntime() && require("thrift")) || window.Thrift // eslint-disable-line global-require
+const { TDatumType, TEncodingType } = isNodeRuntime() ? require("../build/thrift/node/common_types.js"): threadContext();
+const { TPixel, TOmniSciException } = isNodeRuntime() ? require("../build/thrift/node/omnisci_types.js"): threadContext();
+const MapDThrift = isNodeRuntime() ? require("../build/thrift/node/OmniSci.js"): threadContext();
+let Thrift = isNodeRuntime() ? require("thrift"): threadContext().Thrift;
 const thriftWrapper = Thrift
 const parseUrl = isNodeRuntime() && require("url").parse // eslint-disable-line global-require
 if (isNodeRuntime()) {
@@ -16,22 +19,25 @@ if (isNodeRuntime()) {
   Thrift.Protocol = thriftWrapper.TJSONProtocol
 }
 
-import * as helpers from "./helpers"
-
-import clone from "ramda.clone"
-import EventEmitter from "eventemitter3"
-
-import MapDClientV2 from "./mapd-client-v2"
-import processQueryResults from "./process-query-results"
-
 const COMPRESSION_LEVEL_DEFAULT = 3
 
 function arrayify(maybeArray) {
   return Array.isArray(maybeArray) ? maybeArray : [maybeArray]
 }
 
-function isNodeRuntime() {
-  return typeof window === "undefined"
+export function isNodeRuntime() {
+  // eslint-disable-next-line no-new-func
+  const isNode=new Function("try {return this===global;}catch(e){return false;}");
+  console.log('env', isNode())
+  return isNode();
+}
+
+export function isWebWorker() {
+  return typeof self.document === 'undefined';
+}
+
+export function threadContext() {
+  return isWebWorker() ? self: window;
 }
 
 class MapdCon {
@@ -127,7 +133,7 @@ class MapdCon {
 
     if (!this._protocol) {
       this._protocol = this._host.map(() =>
-        window.location.protocol.replace(":", "")
+        threadContext().location.protocol.replace(":", "")
       )
     }
 
@@ -2033,7 +2039,7 @@ function resetThriftClientOnArgumentErrorForMethods(
 // Set a global mapdcon function when mapdcon is brought in via script tag.
 if (typeof module === "object" && module.exports) {
   if (!isNodeRuntime()) {
-    window.MapdCon = MapdCon
+    threadContext().MapdCon = MapdCon
   }
 }
 module.exports = MapdCon

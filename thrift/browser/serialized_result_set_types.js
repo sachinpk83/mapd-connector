@@ -4,7 +4,7 @@
 // DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 //
 
-
+var window = self;
 TResultSetLayout = {
   'GroupByPerfectHash' : 0,
   'GroupByBaselineHash' : 1,

@@ -39,6 +39,7 @@
  *     var client = new MyThriftSvcClient(protocol);
  *     var result = client.MyMethod();
  */
+var window = self;
 var Thrift = {
   /**
    * Thrift JavaScript library version.

@@ -1,9 +1,7 @@
-const MapDClient =
-  (typeof window !== "undefined" && window.OmniSciClient) ||
-  require("../build/thrift/node/OmniSci.js").Client // eslint-disable-line global-require
-
+import {isNodeRuntime, threadContext} from "./mapd-con-es6";
 import { wrapWithErrorHandling } from "./wrap-with-error-handling"
 
+const MapDClient = isNodeRuntime() ? require("../build/thrift/node/OmniSci.js").Client: threadContext().OmniSciClient;
 export default function MapDClientV2(protocol) {
   MapDClient.call(this, protocol)
 }

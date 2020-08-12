@@ -8,3 +8,4 @@ npm-debug.log
 *-transpiled.js
 coverage/
 .nyc_output/
+.idea/

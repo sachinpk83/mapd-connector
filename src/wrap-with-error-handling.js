@@ -1,11 +1,8 @@
-const MapDClient =
-  (typeof window !== "undefined" && window.OmniSciClient) ||
-  require("../build/thrift/node/OmniSci.js").Client // eslint-disable-line global-require
-const TMapDException =
-  (typeof window !== "undefined" && window.TOmniSciException) ||
-  require("../build/thrift/node/omnisci_types.js").TOmniSciException // eslint-disable-line global-require
-const Thrift =
-  (typeof window !== "undefined" && window.Thrift) || require("thrift").Thrift // eslint-disable-line global-require
+import {isNodeRuntime, threadContext} from "./mapd-con-es6";
+
+const MapDClient = isNodeRuntime() ? require("../build/thrift/node/OmniSci.js").Client: threadContext().OmniSciClient;
+const TMapDException = isNodeRuntime() ? require("../build/thrift/node/omnisci_types.js").TOmniSciException: threadContext().TOmniSciException;
+const Thrift = isNodeRuntime() ? require("thrift").Thrift: threadContext().Thrift;
 
 export function isResultError(result) {
   return result instanceof Thrift.TException || result instanceof Error

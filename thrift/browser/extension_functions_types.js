@@ -4,7 +4,7 @@
 // DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 //
 
-
+var window = self;
 TExtArgumentType = {
   'Int8' : 0,
   'Int16' : 1,

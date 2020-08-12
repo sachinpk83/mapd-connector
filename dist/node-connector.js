@@ -20418,7 +20418,13 @@ module.exports =
 
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global TCreateParams: false, TDashboardPermissions: false, TDBObjectType: false, TDBObjectPermissions: false, TDatabasePermissions: false */
+	// eslint-disable-next-line sort-imports
+
+
+	exports.isNodeRuntime = isNodeRuntime;
+	exports.isWebWorker = isWebWorker;
+	exports.threadContext = threadContext;
 
 	var _helpers = __webpack_require__(62);
 
@@ -20446,20 +20452,16 @@ module.exports =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	/* global TCreateParams: false, TDashboardPermissions: false, TDBObjectType: false, TDBObjectPermissions: false, TDatabasePermissions: false */
-
-	var _ref = isNodeRuntime() && __webpack_require__(54) || window,
+	var _ref = isNodeRuntime() ? __webpack_require__(54) : threadContext(),
 	    TDatumType = _ref.TDatumType,
-	    TEncodingType = _ref.TEncodingType; // eslint-disable-line global-require
+	    TEncodingType = _ref.TEncodingType;
 
-
-	var _ref2 = isNodeRuntime() && __webpack_require__(57) || window,
+	var _ref2 = isNodeRuntime() ? __webpack_require__(57) : threadContext(),
 	    TPixel = _ref2.TPixel,
-	    TOmniSciException = _ref2.TOmniSciException; // eslint-disable-line global-require
+	    TOmniSciException = _ref2.TOmniSciException;
 
-
-	var MapDThrift = isNodeRuntime() && __webpack_require__(59); // eslint-disable-line global-require
-	var Thrift = isNodeRuntime() && __webpack_require__(1) || window.Thrift; // eslint-disable-line global-require
+	var MapDThrift = isNodeRuntime() ? __webpack_require__(59) : threadContext();
+	var Thrift = isNodeRuntime() ? __webpack_require__(1) : threadContext().Thrift;
 	var thriftWrapper = Thrift;
 	var parseUrl = isNodeRuntime() && __webpack_require__(26).parse; // eslint-disable-line global-require
 	if (isNodeRuntime()) {
@@ -20476,7 +20478,18 @@ module.exports =
 	}
 
 	function isNodeRuntime() {
-	  return typeof window === "undefined";
+	  // eslint-disable-next-line no-new-func
+	  var isNode = new Function("try {return this===global;}catch(e){return false;}");
+	  console.log('env', isNode());
+	  return isNode();
+	}
+
+	function isWebWorker() {
+	  return typeof self.document === 'undefined';
+	}
+
+	function threadContext() {
+	  return isWebWorker() ? self : window;
 	}
 
 	var MapdCon = function () {
@@ -20960,7 +20973,7 @@ module.exports =
 
 	      if (!this._protocol) {
 	        this._protocol = this._host.map(function () {
-	          return window.location.protocol.replace(":", "");
+	          return threadContext().location.protocol.replace(":", "");
 	        });
 	      }
 
@@ -22384,7 +22397,8 @@ module.exports =
 	// Set a global mapdcon function when mapdcon is brought in via script tag.
 	if (( false ? "undefined" : _typeof(module)) === "object" && module.exports) {
 	  if (!isNodeRuntime()) {
-	    window.MapdCon = MapdCon;
+	    debugger;
+	    threadContext().MapdCon = MapdCon;
 	  }
 	}
 	module.exports = MapdCon;
@@ -22964,10 +22978,11 @@ module.exports =
 	});
 	exports.default = MapDClientV2;
 
+	var _mapdConEs = __webpack_require__(60);
+
 	var _wrapWithErrorHandling = __webpack_require__(67);
 
-	var MapDClient = typeof window !== "undefined" && window.OmniSciClient || __webpack_require__(59).Client; // eslint-disable-line global-require
-
+	var MapDClient = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(59).Client : (0, _mapdConEs.threadContext)().OmniSciClient;
 	function MapDClientV2(protocol) {
 	  MapDClient.call(this, protocol);
 	}
@@ -22996,9 +23011,12 @@ module.exports =
 	exports.createResultError = createResultError;
 	exports.wrapMethod = wrapMethod;
 	exports.wrapWithErrorHandling = wrapWithErrorHandling;
-	var MapDClient = typeof window !== "undefined" && window.OmniSciClient || __webpack_require__(59).Client; // eslint-disable-line global-require
-	var TMapDException = typeof window !== "undefined" && window.TOmniSciException || __webpack_require__(57).TOmniSciException; // eslint-disable-line global-require
-	var Thrift = typeof window !== "undefined" && window.Thrift || __webpack_require__(1).Thrift; // eslint-disable-line global-require
+
+	var _mapdConEs = __webpack_require__(60);
+
+	var MapDClient = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(59).Client : (0, _mapdConEs.threadContext)().OmniSciClient;
+	var TMapDException = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(57).TOmniSciException : (0, _mapdConEs.threadContext)().TOmniSciException;
+	var Thrift = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(1).Thrift : (0, _mapdConEs.threadContext)().Thrift;
 
 	function isResultError(result) {
 	  return result instanceof Thrift.TException || result instanceof Error;

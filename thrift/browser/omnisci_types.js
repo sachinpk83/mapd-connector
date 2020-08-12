@@ -4,7 +4,7 @@
 // DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
 //
 
-
+var window = self;
 TExecuteMode = {
   'GPU' : 1,
   'CPU' : 2
