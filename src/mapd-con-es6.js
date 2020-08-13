@@ -28,7 +28,6 @@ function arrayify(maybeArray) {
 export function isNodeRuntime() {
   // eslint-disable-next-line no-new-func
   const isNode=new Function("try {return this===global;}catch(e){return false;}");
-  console.log('env', isNode())
   return isNode();
 }
 

@@ -1,17 +1,17 @@
 "use strict"
+import {isNodeRuntime} from '../src/mapd-con-es6';
+
 const hostname = process.env.HOSTNAME || "metis.mapd.com"
 const protocol = process.env.PROTOCOL || "https"
 const port = process.env.PORT || "443"
 const database = process.env.DATABASE || "mapd"
 const username = process.env.USERNAME || "mapd"
 const password = process.env.PASSWORD || "HyperInteractive"
-
-const isNodeRuntime = typeof window === "undefined"
-const expect = isNodeRuntime ? require("chai").expect : window.expect
-const convertToDataUrl = isNodeRuntime
+const expect = isNodeRuntime() ? require("chai").expect : window.expect
+const convertToDataUrl = isNodeRuntime()
   ? require("base64-arraybuffer").encode
   : x => x
-const Connector = isNodeRuntime
+const Connector = isNodeRuntime()
   ? require("../dist/node-connector.js")
   : window.MapdCon
 
@@ -21,7 +21,7 @@ const imageRegex = /^iVBOR/
 // Note that \1 substitutes in the value of the first capture group (the 12 chars).
 const emptyImageRegex = /^.{70,90}(.{12})\1+.{30,50}$/
 
-describe(isNodeRuntime ? "node" : "browser", () => {
+describe(isNodeRuntime() ? "node" : "browser", () => {
   let connector
   beforeEach(() => {
     connector = new Connector()
@@ -586,7 +586,7 @@ describe(isNodeRuntime ? "node" : "browser", () => {
     })
   })
 
-  if (isNodeRuntime) {
+  if (isNodeRuntime()) {
     // bug only applies to node; in browser thriftTransportInstance is undefined.
     it("on bad arguments: passes error, flushes internal buffer so next RPC doesn't fail, dereferences callback to avoid memory leak", done => {
       const BAD_ARG = {}

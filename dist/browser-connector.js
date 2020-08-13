@@ -246,7 +246,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function isNodeRuntime() {
 	  // eslint-disable-next-line no-new-func
 	  var isNode = new Function("try {return this===global;}catch(e){return false;}");
-	  console.log('env', isNode());
 	  return isNode();
 	}
 
@@ -2163,7 +2162,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Set a global mapdcon function when mapdcon is brought in via script tag.
 	if (( false ? "undefined" : _typeof(module)) === "object" && module.exports) {
 	  if (!isNodeRuntime()) {
-	    debugger;
 	    threadContext().MapdCon = MapdCon;
 	  }
 	}

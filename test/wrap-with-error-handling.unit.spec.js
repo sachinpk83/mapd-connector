@@ -1,7 +1,5 @@
 import { expect } from "chai"
 import {
-  CREATE_LINK_ERROR_STRING,
-  isCreateLinkError,
   isResultError
 } from "../src/wrap-with-error-handling"
 
