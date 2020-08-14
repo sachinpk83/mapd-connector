@@ -22,6 +22,7 @@ const imageRegex = /^iVBOR/
 const emptyImageRegex = /^.{70,90}(.{12})\1+.{30,50}$/
 
 describe(isNodeRuntime() ? "node" : "browser", () => {
+  // eslint-disable-next-line init-declarations
   let connector
   beforeEach(() => {
     connector = new Connector()
