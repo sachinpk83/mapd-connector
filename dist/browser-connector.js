@@ -1,14 +1,4 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else {
-		var a = factory();
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
-	}
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -2775,12 +2765,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.createResultError = createResultError;
 	exports.wrapMethod = wrapMethod;
 	exports.wrapWithErrorHandling = wrapWithErrorHandling;
-
-	var _mapdConEs = __webpack_require__(14);
-
-	var MapDClient = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(22).Client : (0, _mapdConEs.threadContext)().OmniSciClient;
-	var TMapDException = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(54).TOmniSciException : (0, _mapdConEs.threadContext)().TOmniSciException;
-	var Thrift = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(23).Thrift : (0, _mapdConEs.threadContext)().Thrift;
+	// eslint-disable-next-line no-new-func
+	var isNodeRuntime = new Function("try {return this===global;}catch(e){return false;}");
+	var MapDClient = isNodeRuntime() ? __webpack_require__(22).Client : window.OmniSciClient;
+	var TMapDException = isNodeRuntime() ? __webpack_require__(54).TOmniSciException : window.TOmniSciException;
+	var Thrift = isNodeRuntime() ? __webpack_require__(23).Thrift : window.Thrift;
 
 	function isResultError(result) {
 	  return result instanceof Thrift.TException || result instanceof Error;
@@ -20937,6 +20926,4 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ })
-/******/ ])
-});
-;
+/******/ ]);

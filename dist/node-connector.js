@@ -23009,12 +23009,11 @@ module.exports =
 	exports.createResultError = createResultError;
 	exports.wrapMethod = wrapMethod;
 	exports.wrapWithErrorHandling = wrapWithErrorHandling;
-
-	var _mapdConEs = __webpack_require__(60);
-
-	var MapDClient = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(59).Client : (0, _mapdConEs.threadContext)().OmniSciClient;
-	var TMapDException = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(57).TOmniSciException : (0, _mapdConEs.threadContext)().TOmniSciException;
-	var Thrift = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(1).Thrift : (0, _mapdConEs.threadContext)().Thrift;
+	// eslint-disable-next-line no-new-func
+	var isNodeRuntime = new Function("try {return this===global;}catch(e){return false;}");
+	var MapDClient = isNodeRuntime() ? __webpack_require__(59).Client : window.OmniSciClient;
+	var TMapDException = isNodeRuntime() ? __webpack_require__(57).TOmniSciException : window.TOmniSciException;
+	var Thrift = isNodeRuntime() ? __webpack_require__(1).Thrift : window.Thrift;
 
 	function isResultError(result) {
 	  return result instanceof Thrift.TException || result instanceof Error;
