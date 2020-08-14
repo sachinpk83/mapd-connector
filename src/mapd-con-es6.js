@@ -1,19 +1,25 @@
 /* global TCreateParams: false, TDashboardPermissions: false, TDBObjectType: false, TDBObjectPermissions: false, TDatabasePermissions: false */
+// eslint-disable-next-line sort-imports
+import * as helpers from "./helpers"
 import clone from "ramda.clone"
 import EventEmitter from "eventemitter3"
 import MapDClientV2 from "./mapd-client-v2"
 import processQueryResults from "./process-query-results"
-// eslint-disable-next-line sort-imports
-import * as helpers from "./helpers"
-import { isNode, isWebWorker } from "browser-or-node"
 
 export function isNodeRuntime() {
-  return isNode;
+  // eslint-disable-next-line no-new-func
+  const isNode=new Function("try {return this===global;}catch(e){return false;}");
+  return isNode();
+}
+
+export function isWebWorker() {
+  return typeof self.document === 'undefined';
 }
 
 export function threadContext() {
-  return isWebWorker ? self: window;
+  return isWebWorker() ? self: window;
 }
+
 
 const { TDatumType, TEncodingType } = isNodeRuntime() ? require("../build/thrift/node/common_types.js"): threadContext();
 const { TPixel, TOmniSciException } = isNodeRuntime() ? require("../build/thrift/node/omnisci_types.js"): threadContext();

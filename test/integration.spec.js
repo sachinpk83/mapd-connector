@@ -1,5 +1,5 @@
 "use strict"
-import {isNodeRuntime} from '../src/mapd-con-es6';
+import {isNodeRuntime} from "./mapd-con-es6";
 
 const hostname = process.env.HOSTNAME || "metis.mapd.com"
 const protocol = process.env.PROTOCOL || "https"
@@ -7,6 +7,7 @@ const port = process.env.PORT || "443"
 const database = process.env.DATABASE || "mapd"
 const username = process.env.USERNAME || "mapd"
 const password = process.env.PASSWORD || "HyperInteractive"
+
 const expect = isNodeRuntime() ? require("chai").expect : window.expect
 const convertToDataUrl = isNodeRuntime()
   ? require("base64-arraybuffer").encode

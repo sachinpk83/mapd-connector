@@ -20419,47 +20419,51 @@ module.exports =
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global TCreateParams: false, TDashboardPermissions: false, TDBObjectType: false, TDBObjectPermissions: false, TDatabasePermissions: false */
-
 	// eslint-disable-next-line sort-imports
 
 
 	exports.isNodeRuntime = isNodeRuntime;
+	exports.isWebWorker = isWebWorker;
 	exports.threadContext = threadContext;
 
-	var _ramda = __webpack_require__(62);
-
-	var _ramda2 = _interopRequireDefault(_ramda);
-
-	var _eventemitter = __webpack_require__(64);
-
-	var _eventemitter2 = _interopRequireDefault(_eventemitter);
-
-	var _mapdClientV = __webpack_require__(65);
-
-	var _mapdClientV2 = _interopRequireDefault(_mapdClientV);
-
-	var _processQueryResults = __webpack_require__(67);
-
-	var _processQueryResults2 = _interopRequireDefault(_processQueryResults);
-
-	var _helpers = __webpack_require__(69);
+	var _helpers = __webpack_require__(62);
 
 	var helpers = _interopRequireWildcard(_helpers);
 
-	var _browserOrNode = __webpack_require__(71);
+	var _ramda = __webpack_require__(63);
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	var _ramda2 = _interopRequireDefault(_ramda);
+
+	var _eventemitter = __webpack_require__(65);
+
+	var _eventemitter2 = _interopRequireDefault(_eventemitter);
+
+	var _mapdClientV = __webpack_require__(66);
+
+	var _mapdClientV2 = _interopRequireDefault(_mapdClientV);
+
+	var _processQueryResults = __webpack_require__(68);
+
+	var _processQueryResults2 = _interopRequireDefault(_processQueryResults);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function isNodeRuntime() {
-	  return _browserOrNode.isNode;
+	  // eslint-disable-next-line no-new-func
+	  var isNode = new Function("try {return this===global;}catch(e){return false;}");
+	  return isNode();
+	}
+
+	function isWebWorker() {
+	  return typeof self.document === 'undefined';
 	}
 
 	function threadContext() {
-	  return _browserOrNode.isWebWorker ? self : window;
+	  return isWebWorker() ? self : window;
 	}
 
 	var _ref = isNodeRuntime() ? __webpack_require__(54) : threadContext(),
@@ -22417,15 +22421,59 @@ module.exports =
 
 /***/ }),
 /* 62 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.timestampToMs = timestampToMs;
+	var convertObjectToThriftCopyParams = exports.convertObjectToThriftCopyParams = function convertObjectToThriftCopyParams(obj) {
+	  return new TCopyParams(obj);
+	}; // eslint-disable-line no-undef
+
+	var mutateThriftRowDesc = exports.mutateThriftRowDesc = function mutateThriftRowDesc(rowDescArray, thriftRowDescArray) {
+	  rowDescArray.forEach(function (obj, i) {
+	    thriftRowDescArray[i].col_name = obj.clean_col_name;
+	    thriftRowDescArray[i].col_type.encoding = obj.col_type.encoding;
+	    thriftRowDescArray[i].col_type.precision = obj.col_type.precision;
+	    thriftRowDescArray[i].col_type.comp_param = obj.col_type.comp_param;
+	    thriftRowDescArray[i].col_type.scale = obj.col_type.scale;
+	    thriftRowDescArray[i].col_type.type = obj.col_type.type;
+	  });
+	  return thriftRowDescArray;
+	};
+
+	/**
+	 * Converts a raw integer timestamp value from the DB into milliseconds. The DB timestamp value may
+	 * represent seconds, ms, us, or ns depending on the precision of the column. This value is
+	 * truncated or extended as necessary to convert to ms precision. The returned ms value is suitable
+	 * for passing to the JS Date object constructor.
+	 * @param {Number} timestamp - The raw integer timestamp in the database.
+	 * @param {Number} precision - The precision of the timestamp column in the database.
+	 * @returns {Number} The equivalent timestamp in milliseconds.
+	 */
+	function timestampToMs(timestamp, precision) {
+	  // A precision of 0 = sec, 3 = ms. Thus, this line finds the value to divide the DB val
+	  // eslint-disable-next-line no-magic-numbers
+	  var divisor = Math.pow(10, precision - 3);
+	  var timeInMs = timestamp / divisor;
+
+	  return timeInMs;
+	}
+
+/***/ }),
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(63).clone;
+	module.exports = __webpack_require__(64).clone;
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//  Ramda v0.26.1
@@ -22576,7 +22624,7 @@ module.exports =
 
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22918,7 +22966,7 @@ module.exports =
 
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -22930,7 +22978,7 @@ module.exports =
 
 	var _mapdConEs = __webpack_require__(60);
 
-	var _wrapWithErrorHandling = __webpack_require__(66);
+	var _wrapWithErrorHandling = __webpack_require__(67);
 
 	var MapDClient = (0, _mapdConEs.isNodeRuntime)() ? __webpack_require__(59).Client : (0, _mapdConEs.threadContext)().OmniSciClient;
 	function MapDClientV2(protocol) {
@@ -22949,7 +22997,7 @@ module.exports =
 	}();
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23023,7 +23071,7 @@ module.exports =
 	/* eslint-enable consistent-this */
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23033,7 +23081,7 @@ module.exports =
 	});
 	exports.default = processQueryResults;
 
-	var _processColumnarResults = __webpack_require__(68);
+	var _processColumnarResults = __webpack_require__(69);
 
 	var _processColumnarResults2 = _interopRequireDefault(_processColumnarResults);
 
@@ -23134,7 +23182,7 @@ module.exports =
 	}
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -23144,7 +23192,7 @@ module.exports =
 	});
 	exports.default = processColumnarResults;
 
-	var _helpers = __webpack_require__(69);
+	var _helpers = __webpack_require__(62);
 
 	/**
 	 * Process the column-based results from the query in a row-based format.
@@ -23274,50 +23322,6 @@ module.exports =
 	}
 
 /***/ }),
-/* 69 */
-/***/ (function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.timestampToMs = timestampToMs;
-	var convertObjectToThriftCopyParams = exports.convertObjectToThriftCopyParams = function convertObjectToThriftCopyParams(obj) {
-	  return new TCopyParams(obj);
-	}; // eslint-disable-line no-undef
-
-	var mutateThriftRowDesc = exports.mutateThriftRowDesc = function mutateThriftRowDesc(rowDescArray, thriftRowDescArray) {
-	  rowDescArray.forEach(function (obj, i) {
-	    thriftRowDescArray[i].col_name = obj.clean_col_name;
-	    thriftRowDescArray[i].col_type.encoding = obj.col_type.encoding;
-	    thriftRowDescArray[i].col_type.precision = obj.col_type.precision;
-	    thriftRowDescArray[i].col_type.comp_param = obj.col_type.comp_param;
-	    thriftRowDescArray[i].col_type.scale = obj.col_type.scale;
-	    thriftRowDescArray[i].col_type.type = obj.col_type.type;
-	  });
-	  return thriftRowDescArray;
-	};
-
-	/**
-	 * Converts a raw integer timestamp value from the DB into milliseconds. The DB timestamp value may
-	 * represent seconds, ms, us, or ns depending on the precision of the column. This value is
-	 * truncated or extended as necessary to convert to ms precision. The returned ms value is suitable
-	 * for passing to the JS Date object constructor.
-	 * @param {Number} timestamp - The raw integer timestamp in the database.
-	 * @param {Number} precision - The precision of the timestamp column in the database.
-	 * @returns {Number} The equivalent timestamp in milliseconds.
-	 */
-	function timestampToMs(timestamp, precision) {
-	  // A precision of 0 = sec, 3 = ms. Thus, this line finds the value to divide the DB val
-	  // eslint-disable-next-line no-magic-numbers
-	  var divisor = Math.pow(10, precision - 3);
-	  var timeInMs = timestamp / divisor;
-
-	  return timeInMs;
-	}
-
-/***/ }),
 /* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -23328,7 +23332,7 @@ module.exports =
 	});
 	exports.default = processRowResults;
 
-	var _helpers = __webpack_require__(69);
+	var _helpers = __webpack_require__(62);
 
 	/**
 	 * Query for row-based results from the server. In general, is inefficient and should be
@@ -23464,42 +23468,6 @@ module.exports =
 	  }
 	  return formattedResult;
 	}
-
-/***/ }),
-/* 71 */
-/***/ (function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-	/* global window self */
-
-	var isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
-
-	/* eslint-disable no-restricted-globals */
-	var isWebWorker = (typeof self === 'undefined' ? 'undefined' : _typeof(self)) === 'object' && self.constructor && self.constructor.name === 'DedicatedWorkerGlobalScope';
-	/* eslint-enable no-restricted-globals */
-
-	var isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
-
-	/**
-	 * @see https://github.com/jsdom/jsdom/releases/tag/12.0.0
-	 * @see https://github.com/jsdom/jsdom/issues/1537
-	 */
-	/* eslint-disable no-undef */
-	var isJsDom = function isJsDom() {
-	  return typeof window !== 'undefined' && window.name === 'nodejs' || navigator.userAgent.includes('Node.js') || navigator.userAgent.includes('jsdom');
-	};
-
-	exports.isBrowser = isBrowser;
-	exports.isWebWorker = isWebWorker;
-	exports.isNode = isNode;
-	exports.isJsDom = isJsDom;
 
 /***/ })
 /******/ ]);
