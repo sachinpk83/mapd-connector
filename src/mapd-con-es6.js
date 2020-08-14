@@ -20,7 +20,6 @@ export function threadContext() {
   return isWebWorker() ? self: window;
 }
 
-
 const { TDatumType, TEncodingType } = isNodeRuntime() ? require("../build/thrift/node/common_types.js"): threadContext();
 const { TPixel, TOmniSciException } = isNodeRuntime() ? require("../build/thrift/node/omnisci_types.js"): threadContext();
 const MapDThrift = isNodeRuntime() ? require("../build/thrift/node/OmniSci.js"): threadContext();

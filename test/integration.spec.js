@@ -7,7 +7,6 @@ const port = process.env.PORT || "443"
 const database = process.env.DATABASE || "mapd"
 const username = process.env.USERNAME || "mapd"
 const password = process.env.PASSWORD || "HyperInteractive"
-
 const expect = isNodeRuntime() ? require("chai").expect : window.expect
 const convertToDataUrl = isNodeRuntime()
   ? require("base64-arraybuffer").encode
